@@ -1,0 +1,290 @@
+import json
+import socket
+import time
+
+from sanic import Sanic
+from mcstatus import JavaServer
+
+
+app = Sanic('qqbot')
+base_path = "nonebot/keyword/"
+
+
+@app.websocket('/qqbot')
+async def qqbot(request, ws):
+    """QQ机器人"""
+    while True:
+        data = await ws.recv()
+        data = json.loads(data)
+        print(json.dumps(data, indent=4, ensure_ascii=False))
+        # if 判断是群消息且文本消息不为空
+        if data.get('message_type') == 'group' and data.get('raw_message'):
+            raw_message = data['raw_message']
+            if raw_message == "#help":
+                with open(base_path + "commands.txt", encoding="utf8") as f:
+                    msg = f.read()
+                ret = {
+                    'action': 'send_group_msg',
+                    'params': {
+                        'group_id': data['group_id'],
+                        'message': msg,
+                    }
+                }
+                await ws.send(json.dumps(ret))
+            elif raw_message == "#list":
+                msg = ""
+
+                server = "localhost:25565"
+                online = query_online_players(server)
+
+                msg += f"1服在线玩家：{online}\n"
+
+                server = "localhost:23333"
+                online = query_online_players(server)
+
+                msg += f"2服在线玩家：{online}\n"
+
+                server = "localhost:23335"
+                online = query_online_players(server)
+
+                msg += f"3服在线玩家：{online}\n"
+
+                server = "localhost:23337"
+                online = query_online_players(server)
+
+                msg += f"4服在线玩家：{online}\n"
+
+                server = "www.sdyg.games:25565"
+                online = query_online_players(server)
+
+                msg += f"5服在线玩家：{online}\n"
+                ret = {
+                    'action': 'send_group_msg',
+                    'params': {
+                        'group_id': data['group_id'],
+                        'message': msg,
+                    }
+                }
+                await ws.send(json.dumps(ret))
+            elif raw_message == "#1":
+                msg = "1服情况：\n"
+                server = "xxnode.bupt.moe:25565"
+
+                msg += query_detail(server)
+
+                ret = {
+                    'action': 'send_group_msg',
+                    'params': {
+                        'group_id': data['group_id'],
+                        'message': msg,
+                    }
+                }
+                await ws.send(json.dumps(ret))
+            elif raw_message == "#2":
+                msg = "2服情况：\n"
+                server = "xxnode.bupt.moe:23333"
+
+                msg += query_detail(server)
+
+                ret = {
+                    'action': 'send_group_msg',
+                    'params': {
+                        'group_id': data['group_id'],
+                        'message': msg,
+                    }
+                }
+                await ws.send(json.dumps(ret))
+            elif raw_message == "#3":
+                msg = "3服情况：\n"
+                server = "xxnode.bupt.moe:23335"
+
+                msg += query_detail(server)
+
+                ret = {
+                    'action': 'send_group_msg',
+                    'params': {
+                        'group_id': data['group_id'],
+                        'message': msg,
+                    }
+                }
+                await ws.send(json.dumps(ret))
+            elif raw_message == "#4":
+                msg = "4服情况：\n"
+                server = "xxnode.bupt.moe:23337"
+
+                msg += query_detail(server)
+
+                ret = {
+                    'action': 'send_group_msg',
+                    'params': {
+                        'group_id': data['group_id'],
+                        'message': msg,
+                    }
+                }
+                await ws.send(json.dumps(ret))
+            elif raw_message == "#5":
+                msg = "5服情况：\n"
+                server = "www.sdyg.games:25565"
+
+                msg += query_detail(server)
+
+                ret = {
+                    'action': 'send_group_msg',
+                    'params': {
+                        'group_id': data['group_id'],
+                        'message': msg,
+                    }
+                }
+                await ws.send(json.dumps(ret))
+            elif str(raw_message).startswith('#status'):
+                msg = ''
+                server = str(raw_message).replace('#status', '').replace(' ', '')
+                if server != '':
+                    msg += query_detail(server)
+
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+                else:
+                    msg += '输入 "#status [主机:端口]" 查询其他服务器'
+
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+
+            # else:
+            #     msg = "输入 #help 查看所有命令，间隔60s"
+            #     ret = {
+            #         'action': 'send_group_msg',
+            #         'params': {
+            #             'group_id': data['group_id'],
+            #             'message': msg,
+            #         }
+            #     }
+            #     await ws.send(json.dumps(ret))
+            #     time.sleep(1)
+
+            """
+            elif raw_message == "/群主介绍":
+                with open(base_path + "群主介绍.txt", encoding="utf8") as f:
+                    msg = f.read()
+                ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                await ws.send(json.dumps(ret))
+            elif raw_message == "/群主主页":
+                with open(base_path + "群主主页.txt", encoding="utf8") as f:
+                    msg = f.read()
+                ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                await ws.send(json.dumps(ret))
+            elif raw_message == "/Python学习目录":
+                with open(base_path + "Python学习目录.txt", encoding="utf8") as f:
+                    msg = f.read()
+                ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                await ws.send(json.dumps(ret))
+            elif raw_message == "/开发项目":
+                with open(base_path + "开发项目.txt", encoding="utf8") as f:
+                    msg = f.read()
+                ret = {
+                    'action': 'send_group_msg',
+                    'params': {
+                        'group_id': data['group_id'],
+                        'message': msg,
+                    }
+                }
+                await ws.send(json.dumps(ret))
+            """
+
+
+def query_online_players(server):
+    try:
+        server_status = JavaServer.lookup(server)
+        status = server_status.status()
+        return status.players.online
+    except socket.timeout:
+        return "Timeout"
+    except socket.gaierror:
+        return "Unknown"
+
+
+def query_detail(server):
+    msg = ""
+    try:
+        # try:
+        #     mcserver = JavaServer.lookup(server)
+        #     resp = mcserver
+        #     response = mcserver.query()
+        #
+        # except socket.timeout:
+        #     msg += (
+        #         "The server did not respond to the query protocol."
+        #         "\nPlease ensure that the server has enable-query turned on,"
+        #         " and that the necessary port (same as server-port unless query-port is set) is open in any firewall(s)."
+        #         "\nSee https://wiki.vg/Query for further information."
+        #     )
+        #     return msg
+        # msg += f"host: {response.raw['hostip']}:{response.raw['hostport']}"
+        # msg += f"\nsoftware: v{response.software.version} {response.software.brand}"
+        # msg += f"\nplugins: {response.software.plugins}"
+        # msg += f'\nmotd: "{response.motd}"'
+        # msg += f"\nplayers: {response.players.online}/{response.players.max} {response.players.names}"
+
+        server_status = JavaServer.lookup(server)
+        response = server_status.status()
+        # if response.players.sample is not None:
+        #     player_sample = str([f"{player.name} ({player.id})" for player in response.players.sample])
+        # else:
+        #     player_sample = "No players online"
+        #
+        # msg += f"version: v{response.version.name} (protocol {response.version.protocol})"
+        # msg += f'\ndescription: "{response.description}"'
+        # msg += f"\nplayers: {response.players.online}/{response.players.max} {player_sample}"
+        if response.players.sample is not None:
+            # player_sample = str([f"{player.name} ({player.id})" for player in response.players.sample])
+            player_sample = str([f"{player.name}" for player in response.players.sample])
+        else:
+            player_sample = "没有玩家在线"
+
+        msg += f"连接名称: {server}"
+        msg += f"\nMC版本: v{response.version.name} (protocol {response.version.protocol})"
+        msg += f'\n服务器描述: "{response.description}"'
+        msg += f"\n玩家: {response.players.online}/{response.players.max} {player_sample}"
+
+        return msg
+
+    except socket.timeout:
+        msg += "连接服务器超时，或者主机格式有误"
+        return msg
+    except socket.gaierror:
+        msg += "未知域名"
+        return msg
+
+
+if __name__ == '__main__':
+    app.run(host="127.0.0.1", debug=True, port=8765, auto_reload=True)
