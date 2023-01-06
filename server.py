@@ -167,7 +167,7 @@ async def qqbot(request, ws):
                 msg = ''
                 if re.match('^#downloads$', str(raw_message)):
                     msg += '历史存档下载地址：https://mc.kkdy.tech/downloads'
-                    saves = len(os.listdir('../../legacy_saves/'))
+                    saves = len(os.listdir('../../legacy_saves/')) - 1  # minus LATEST_UPDATE
                     msg += '\n当前共有{}个存档，输入"#downloads <包名>"快速查询存档下载链接'.format(saves)
                     ret = {
                         'action': 'send_group_msg',
