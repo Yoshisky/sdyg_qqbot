@@ -185,9 +185,9 @@ async def qqbot(request, ws):
                     if len(results) >= 10:
                         msg += '查询整合包{}的存档结果过多'.format(modpack)
                     elif len(results) > 0:
-                        msg += '整合包{}的存档下载地址为：\n'.format(modpack)
+                        msg += '整合包{}的存档下载地址为：'.format(modpack)
                         for result in results:
-                            msg += 'https://mc.kkdy.tech/downloads/'+result
+                            msg += '\nhttps://mc.kkdy.tech/downloads/'+result
                     else:
                         msg += '查不到整合包{}的存档'.format(modpack)
 
