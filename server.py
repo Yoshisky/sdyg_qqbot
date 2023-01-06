@@ -1,4 +1,6 @@
 import json
+import os
+import re
 import socket
 import time
 
@@ -152,6 +154,42 @@ async def qqbot(request, ws):
                     await ws.send(json.dumps(ret))
                 else:
                     msg += '输入 "#status [主机:端口]" 查询其他服务器'
+
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+            elif str(raw_message).startswith('#downloads'):
+                msg = ''
+                if re.match('^#downloads$', str(raw_message)):
+                    msg += '历史存档下载地址：https://mc.kkdy.tech/downloads'
+                    saves = len(os.listdir('../../legacy_saves/'))
+                    msg += '\n当前共有{}个存档，输入"#downloads <包名>"快速查询存档下载链接'.format(saves)
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+                else:
+                    modpack = str(raw_message).replace('#downloads ', '')
+                    saves = os.listdir('../../legacy_saves/')
+                    results = [x for i, x in enumerate(saves) if x.find(modpack) != -1]
+
+                    if len(results) >= 10:
+                        msg += '查询{}结果过多'.format(modpack)
+                    elif len(results) > 0:
+                        msg += '整合包{}的下载地址为：\n'.format(modpack)
+                        for result in results:
+                            msg += 'https://mc.kkdy.tech/downloads/'+result
+                    else:
+                        msg += '查不到整合包{}'.format(modpack)
 
                     ret = {
                         'action': 'send_group_msg',
