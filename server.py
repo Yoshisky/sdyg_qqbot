@@ -23,125 +23,79 @@ async def qqbot(request, ws):
         if data.get('message_type') == 'group' and data.get('raw_message'):
             raw_message = data['raw_message']
             if raw_message == "#help":
-                with open(base_path + "commands.txt", encoding="utf8") as f:
-                    msg = f.read()
-                ret = {
-                    'action': 'send_group_msg',
-                    'params': {
-                        'group_id': data['group_id'],
-                        'message': msg,
+                try:
+                    with open(base_path + "commands.txt", encoding="utf8") as f:
+                        msg = f.read()
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
                     }
-                }
-                await ws.send(json.dumps(ret))
+                    await ws.send(json.dumps(ret))
+                except Exception as e:
+                    msg += '乐，出现未知错误'
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+
             elif raw_message == "#list":
                 msg = ""
+                try:
+                    server = "localhost:25565"
+                    online = query_online_players(server)
 
-                server = "localhost:25565"
-                online = query_online_players(server)
+                    msg += f"1服在线玩家：{online}\n"
 
-                msg += f"1服在线玩家：{online}\n"
+                    server = "localhost:23333"
+                    online = query_online_players(server)
 
-                server = "localhost:23333"
-                online = query_online_players(server)
+                    msg += f"2服在线玩家：{online}\n"
 
-                msg += f"2服在线玩家：{online}\n"
+                    server = "localhost:23335"
+                    online = query_online_players(server)
 
-                server = "localhost:23335"
-                online = query_online_players(server)
+                    msg += f"3服在线玩家：{online}\n"
 
-                msg += f"3服在线玩家：{online}\n"
+                    server = "localhost:23337"
+                    online = query_online_players(server)
 
-                server = "localhost:23337"
-                online = query_online_players(server)
+                    msg += f"4服在线玩家：{online}\n"
 
-                msg += f"4服在线玩家：{online}\n"
+                    server = "www.sdyg.games:25565"
+                    online = query_online_players(server)
 
-                server = "www.sdyg.games:25565"
-                online = query_online_players(server)
-
-                msg += f"5服在线玩家：{online}\n"
-                ret = {
-                    'action': 'send_group_msg',
-                    'params': {
-                        'group_id': data['group_id'],
-                        'message': msg,
+                    msg += f"5服在线玩家：{online}\n"
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
                     }
-                }
-                await ws.send(json.dumps(ret))
+                    await ws.send(json.dumps(ret))
+                except Exception as e:
+                    msg += '乐，出现未知错误'
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+
             elif raw_message == "#1":
                 msg = "1服情况：\n"
-                server = "xxnode.bupt.moe:25565"
+                try:
+                    server = "xxnode.bupt.moe:25565"
 
-                msg += query_detail(server)
-
-                ret = {
-                    'action': 'send_group_msg',
-                    'params': {
-                        'group_id': data['group_id'],
-                        'message': msg,
-                    }
-                }
-                await ws.send(json.dumps(ret))
-            elif raw_message == "#2":
-                msg = "2服情况：\n"
-                server = "xxnode.bupt.moe:23333"
-
-                msg += query_detail(server)
-
-                ret = {
-                    'action': 'send_group_msg',
-                    'params': {
-                        'group_id': data['group_id'],
-                        'message': msg,
-                    }
-                }
-                await ws.send(json.dumps(ret))
-            elif raw_message == "#3":
-                msg = "3服情况：\n"
-                server = "xxnode.bupt.moe:23335"
-
-                msg += query_detail(server)
-
-                ret = {
-                    'action': 'send_group_msg',
-                    'params': {
-                        'group_id': data['group_id'],
-                        'message': msg,
-                    }
-                }
-                await ws.send(json.dumps(ret))
-            elif raw_message == "#4":
-                msg = "4服情况：\n"
-                server = "xxnode.bupt.moe:23337"
-
-                msg += query_detail(server)
-
-                ret = {
-                    'action': 'send_group_msg',
-                    'params': {
-                        'group_id': data['group_id'],
-                        'message': msg,
-                    }
-                }
-                await ws.send(json.dumps(ret))
-            elif raw_message == "#5":
-                msg = "5服情况：\n"
-                server = "www.sdyg.games:25565"
-
-                msg += query_detail(server)
-
-                ret = {
-                    'action': 'send_group_msg',
-                    'params': {
-                        'group_id': data['group_id'],
-                        'message': msg,
-                    }
-                }
-                await ws.send(json.dumps(ret))
-            elif str(raw_message).startswith('#status'):
-                msg = ''
-                server = str(raw_message).replace('#status', '').replace(' ', '')
-                if server != '':
                     msg += query_detail(server)
 
                     ret = {
@@ -152,8 +106,23 @@ async def qqbot(request, ws):
                         }
                     }
                     await ws.send(json.dumps(ret))
-                else:
-                    msg += '输入 "#status [主机:端口]" 查询其他服务器'
+                except Exception as e:
+                    msg += '乐，出现未知错误'
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+
+            elif raw_message == "#2":
+                msg = "2服情况：\n"
+                try:
+                    server = "xxnode.bupt.moe:23333"
+
+                    msg += query_detail(server)
 
                     ret = {
                         'action': 'send_group_msg',
@@ -163,34 +132,171 @@ async def qqbot(request, ws):
                         }
                     }
                     await ws.send(json.dumps(ret))
+                except Exception as e:
+                    msg += '乐，出现未知错误'
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+
+            elif raw_message == "#3":
+                msg = "3服情况：\n"
+                try:
+                    server = "xxnode.bupt.moe:23335"
+
+                    msg += query_detail(server)
+
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+                except Exception as e:
+                    msg += '乐，出现未知错误'
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+
+            elif raw_message == "#4":
+                msg = "4服情况：\n"
+                try:
+                    server = "xxnode.bupt.moe:23337"
+
+                    msg += query_detail(server)
+
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+                except Exception as e:
+                    msg += '乐，出现未知错误'
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+
+            elif raw_message == "#5":
+                msg = "5服情况：\n"
+                try:
+                    server = "www.sdyg.games:25565"
+
+                    msg += query_detail(server)
+
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+                except Exception as e:
+                    msg += '乐，出现未知错误'
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+
+            elif str(raw_message).startswith('#status'):
+                msg = ''
+                try:
+                    server = str(raw_message).replace('#status', '').replace(' ', '')
+                    if server != '':
+                        msg += query_detail(server)
+
+                        ret = {
+                            'action': 'send_group_msg',
+                            'params': {
+                                'group_id': data['group_id'],
+                                'message': msg,
+                            }
+                        }
+                        await ws.send(json.dumps(ret))
+                    else:
+                        msg += '输入 "#status [主机:端口]" 查询其他服务器'
+
+                        ret = {
+                            'action': 'send_group_msg',
+                            'params': {
+                                'group_id': data['group_id'],
+                                'message': msg,
+                            }
+                        }
+                        await ws.send(json.dumps(ret))
+                except Exception as e:
+                    msg += '乐，出现未知错误'
+                    ret = {
+                        'action': 'send_group_msg',
+                        'params': {
+                            'group_id': data['group_id'],
+                            'message': msg,
+                        }
+                    }
+                    await ws.send(json.dumps(ret))
+
             elif str(raw_message).startswith('#downloads'):
                 msg = ''
-                if re.match('^#downloads$', str(raw_message)):
-                    msg += '历史存档下载地址：https://mc.kkdy.tech/downloads'
-                    saves = len(os.listdir('../../legacy_saves/')) - 1  # minus LATEST_UPDATE
-                    msg += '\n当前共有{}个存档，输入"#downloads <包名>"快速查询存档下载链接'.format(saves)
-                    ret = {
-                        'action': 'send_group_msg',
-                        'params': {
-                            'group_id': data['group_id'],
-                            'message': msg,
+                try:
+                    if re.match('^#downloads$', str(raw_message)):
+                        msg += '历史存档下载地址：https://mc.kkdy.tech/downloads'
+                        saves = len(os.listdir('../../legacy_saves/')) - 1  # minus LATEST_UPDATE
+                        msg += '\n当前共有{}个存档，输入"#downloads <包名>"快速查询存档下载链接'.format(saves)
+                        ret = {
+                            'action': 'send_group_msg',
+                            'params': {
+                                'group_id': data['group_id'],
+                                'message': msg,
+                            }
                         }
-                    }
-                    await ws.send(json.dumps(ret))
-                else:
-                    modpack = str(raw_message).replace('#downloads ', '')
-                    saves = os.listdir('../../legacy_saves/')
-                    results = [x for i, x in enumerate(saves) if x.find(modpack) != -1]
-
-                    if len(results) >= 10:
-                        msg += '查询整合包{}的存档结果过多'.format(modpack)
-                    elif len(results) > 0:
-                        msg += '整合包{}的存档下载地址为：'.format(modpack)
-                        for result in results:
-                            msg += '\nhttps://mc.kkdy.tech/downloads/'+result
+                        await ws.send(json.dumps(ret))
                     else:
-                        msg += '查不到整合包{}的存档'.format(modpack)
+                        modpack = str(raw_message).replace('#downloads ', '')
+                        saves = os.listdir('../../legacy_saves/')
+                        results = [x for i, x in enumerate(saves) if x.find(modpack) != -1]
 
+                        if len(results) >= 10:
+                            msg += '查询整合包{}的存档结果过多'.format(modpack)
+                        elif len(results) > 0:
+                            msg += '整合包{}的存档下载地址为：'.format(modpack)
+                            for result in results:
+                                msg += '\nhttps://mc.kkdy.tech/downloads/' + result
+                        else:
+                            msg += '查不到整合包{}的存档'.format(modpack)
+
+                        ret = {
+                            'action': 'send_group_msg',
+                            'params': {
+                                'group_id': data['group_id'],
+                                'message': msg,
+                            }
+                        }
+                        await ws.send(json.dumps(ret))
+                except Exception as e:
+                    msg += '乐，出现未知错误'
                     ret = {
                         'action': 'send_group_msg',
                         'params': {
