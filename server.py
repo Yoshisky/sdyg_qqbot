@@ -371,10 +371,12 @@ def query_online_players(server):
         server_status = JavaServer.lookup(server)
         status = server_status.status()
         return status.players.online
+    except ConnectionRefusedError:
+        return "GG"
     except socket.timeout:
-        return "Timeout"
+        return "X"
     except socket.gaierror:
-        return "Unknown"
+        return "?"
 
 
 def query_detail(server):
@@ -422,6 +424,9 @@ def query_detail(server):
 
         return msg
 
+    except ConnectionRefusedError:
+        msg += "服务器拒绝访问，多半是寄啦！"
+        return msg
     except socket.timeout:
         msg += "连接服务器超时，或者主机格式有误"
         return msg
