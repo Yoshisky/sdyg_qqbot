@@ -9,7 +9,7 @@ from mcstatus import JavaServer
 
 
 app = Sanic('qqbot')
-base_path = "nonebot/keyword/"
+base_path = "/mnt/minecraft/go-cqhttp/qqbot/nonebot/keyword/"
 
 
 @app.websocket('/qqbot')
