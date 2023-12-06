@@ -1,0 +1,2 @@
+Due to Tencent's new actions on fighting 3rd party bots in 2023, go-cqhttp/nonebot would not function anymore.
+Use official channel bot SDK instead.
