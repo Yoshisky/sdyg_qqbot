@@ -35,10 +35,10 @@ def message_switch(msg = 'BOT不知道喔。。。'):
 
     content = ''
     match msg:
-        case msg if msg.endswith('/help'):
+        case msg if msg.startswith('/help'):
             with open('help.txt', 'r', encoding='UTF-8') as f:
                 content = f.read()
-        case msg if msg.endswith('/list'):
+        case msg if msg.startswith('/list'):
             server1 = query.query_online_players(config.get('server', 'server1'))
             server2 = query.query_online_players(config.get('server', 'server2'))
             server3 = query.query_online_players(config.get('server', 'server3'))
@@ -47,23 +47,23 @@ def message_switch(msg = 'BOT不知道喔。。。'):
 
             content = f'在线情况：\n1服：{server1}\n2服：{server2}\n3服：{server3}\n4服：{server4}\n5服：{server5}'
 
-        case msg if msg.endswith('/1服'):
+        case msg if msg.startswith('/1服'):
             content += '1服情况：'
             host = config.get('server', 'server1')
             content += query.query_detail(host)
-        case msg if msg.endswith('/2服'):
+        case msg if msg.startswith('/2服'):
             content += '2服情况'
             host = config.get('server', 'server2')
             content += query.query_detail(host)
-        case msg if msg.endswith('/3服'):
+        case msg if msg.startswith('/3服'):
             content += '3服情况'
             host = config.get('server', 'server3')
             content += query.query_detail(host)
-        case msg if msg.endswith('/4服'):
+        case msg if msg.startswith('/4服'):
             content += '4服情况'
             host = config.get('server', 'server4')
             content += query.query_detail(host)
-        case msg if msg.endswith('/5服'):
+        case msg if msg.startswith('/5服'):
             content += '5服情况'
             host = config.get('server', 'server5')
             content += query.query_detail(host)
@@ -79,8 +79,10 @@ def message_switch(msg = 'BOT不知道喔。。。'):
 async def commands(api: BotAPI, message: Message, params=None):
     # _log.info(params)
     _log.info("[message] {} {}({})使用了指令".format(message.timestamp, message.author.username, message.author.id))
+    msg = message.content.replace(re.search('<@![0-9]+>+', message.content).group(), '')
+    msg = msg[1:]
 
-    params = message_switch(message.content)
+    params = message_switch(msg)
 
     # 第一种用reply发送消息
     # await message.reply(content=params)
@@ -105,6 +107,8 @@ class MyClient(botpy.Client):
         _log.info(f'[{self.__class__.__name__}] 已获取指定子频道信息: {target_channel}')
         target_channel_id = target_channel.get('id')
 
+        # wait 5 sec for data
+        await asyncio.sleep(5)
         await self.cron_job_post_server_status(target_channel_id)
 
         # log all guild members
