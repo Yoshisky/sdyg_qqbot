@@ -98,7 +98,7 @@ class Mcstatus():
     def query_saves(self, command='/downloads'):
         msg = ''
         try:
-            if re.match('^/downloads$', command):
+            if re.match('^/downloads\s*$', command):
                 msg += f'历史存档下载地址：{config.get("server","download_link").replace(".","。")}'
                 saves = len(os.listdir(f'{config.get("server","saves_dir")}')) - config.getint('server','saves_dir_exclusive')  # minus saves_dir_exclusive
                 msg += '\n当前共有{}个存档，输入"/downloads <包名>"快速查询存档下载链接'.format(saves)
