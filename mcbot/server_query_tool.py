@@ -118,7 +118,8 @@ class Mcstatus():
                 elif len(results) > 0:
                     msg += '整合包{}的存档下载地址为：'.format(modpack)
                     for result in results:
-                        msg += f'\n{config.get("server","download_link").replace(".","。")}' + result
+                        msg += f'\n{config.get("server","download_link").replace(".","。")}' + result.replace(".","。")
+                        # _log.info(f"[{self.__class__.__name__}] {msg}")
                 else:
                     msg += '查不到整合包{}的存档'.format(modpack)
         except Exception as e:
