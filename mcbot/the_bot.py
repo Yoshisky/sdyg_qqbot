@@ -224,8 +224,10 @@ class MyClient(botpy.Client):
                     content=content,
                     image=config.get('cron', 'image_url'),
                 )
-            except ServerError as e:
-                _log.error(f'[{self.__class__.__name__}] 消息发送失败: {e}')
+            except [ServerError, asyncio.TimeoutError, ConnectionResetError] as e:
+                _log.warning(f'[{self.__class__.__name__}] 消息发送失败: {e}')
+            except Exception as e:
+                _log.error(f'[{self.__class__.__name__} 出现错误: {e}]')
 
             await asyncio.sleep(interval)
         else:
