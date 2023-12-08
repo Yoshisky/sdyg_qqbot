@@ -1,4 +1,4 @@
 # created by virtualenv automatically
 pyvenv.cfg
-mcbot/botpy.*
-mcbot/config.cfg
+/mcbot/botpy.*
+/mcbot/config.cfg
