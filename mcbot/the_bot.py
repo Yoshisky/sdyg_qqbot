@@ -10,6 +10,7 @@ from botpy.message import Message, DirectMessage
 from botpy.types.message import Reference, Embed, EmbedField, Thumbnail, Ark, ArkKv, MarkdownPayload, MessageMarkdownParams
 from botpy.ext.command_util import Commands
 from datetime import datetime
+from botpy.errors import ServerError
 
 from server_query_tool import Mcstatus
 
@@ -217,11 +218,14 @@ class MyClient(botpy.Client):
                        f"4服: {query.query_online_players(config.get('server','server4'))}\n"
                        f"5服: {query.query_online_players(config.get('server','server5'))}\n")
 
-            await self.api.post_message(
-                channel_id=target_channel_id,
-                content=content,
-                image=config.get('cron', 'image_url'),
-            )
+            try:
+                await self.api.post_message(
+                    channel_id=target_channel_id,
+                    content=content,
+                    image=config.get('cron', 'image_url'),
+                )
+            except ServerError as e:
+                _log.error(f'[{self.__class__.__name__}] 消息发送失败: {e}')
 
             await asyncio.sleep(interval)
         else:
