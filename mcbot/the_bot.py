@@ -230,6 +230,8 @@ class MyClient(botpy.Client):
                 _log.warning(f'[{self.__class__.__name__}] 定时消息发送失败: {e}')
             except Exception as e:
                 _log.error(f'[{self.__class__.__name__} 出现错误: {e}]')
+            finally:
+                _log.info(f'[{self.__class__.__name__}] 定时消息结束')
 
             await asyncio.sleep(interval)
         else:
