@@ -219,13 +219,15 @@ class MyClient(botpy.Client):
                        f"5服: {query.query_online_players(config.get('server','server5'))}\n")
 
             try:
-                await self.api.post_message(
+                repsonse = await self.api.post_message(
                     channel_id=target_channel_id,
                     content=content,
                     image=config.get('cron', 'image_url'),
                 )
+                if resource == None:
+                    _log.warning(f'[{self.__class__.__name__}] 定时消息发送失败')
             except [ServerError, asyncio.TimeoutError, ConnectionResetError] as e:
-                _log.warning(f'[{self.__class__.__name__}] 消息发送失败: {e}')
+                _log.warning(f'[{self.__class__.__name__}] 定时消息发送失败: {e}')
             except Exception as e:
                 _log.error(f'[{self.__class__.__name__} 出现错误: {e}]')
 
