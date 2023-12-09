@@ -210,6 +210,9 @@ class MyClient(botpy.Client):
             #     embed = embed
             # )
 
+            _log.info(f'[{self.__class__.__name__}] 正在刷新session')
+            await self.http.check_session()
+
             content = (f"当前服务器信息 {datetime.now()}\n"
                        f"\n"
                        f"1服: {query.query_online_players(config.get('server','server1'))}\n"
@@ -224,12 +227,8 @@ class MyClient(botpy.Client):
                     content=content,
                     image=config.get('cron', 'image_url'),
                 )
-                if resource == None:
-                    _log.warning(f'[{self.__class__.__name__}] 定时消息发送失败')
-            except [ServerError, asyncio.TimeoutError, ConnectionResetError] as e:
-                _log.warning(f'[{self.__class__.__name__}] 定时消息发送失败: {e}')
             except Exception as e:
-                _log.error(f'[{self.__class__.__name__} 出现错误: {e}]')
+                _log.error(f'[{self.__class__.__name__} 定时消息发送失败: {e}]')
             finally:
                 _log.info(f'[{self.__class__.__name__}] 定时消息推送结束，离下一次推送还有: {interval}秒')
 
