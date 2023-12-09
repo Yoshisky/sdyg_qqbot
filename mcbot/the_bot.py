@@ -185,7 +185,7 @@ class MyClient(botpy.Client):
         interval = config.getint('cron', 'interval')
         # print(interval)
         if is_cron == True:
-            _log.info(f'[{self.__class__.__name__}] 【定时任务】正在推送服务器信息，设定间隔: {interval}秒')
+            _log.info(f'[{self.__class__.__name__}] 【定时任务】正在定时推送服务器信息')
             # Get channel_id
             # target_guild_id = find_dict_in_list(await self.api.me_guilds(), 'name', config.get('bot', 'guild_name')).get('id')
             # target_channel_id = find_dict_in_list(await self.api.get_channels(target_guild_id), 'name', config.get("bot", "channel_name")).get('id')
@@ -231,7 +231,7 @@ class MyClient(botpy.Client):
             except Exception as e:
                 _log.error(f'[{self.__class__.__name__} 出现错误: {e}]')
             finally:
-                _log.info(f'[{self.__class__.__name__}] 定时消息结束')
+                _log.info(f'[{self.__class__.__name__}] 定时消息推送结束，离下一次推送还有: {interval}秒')
 
             await asyncio.sleep(interval)
         else:
