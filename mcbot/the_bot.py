@@ -228,7 +228,7 @@ class MyClient(botpy.Client):
                     image=config.get('cron', 'image_url'),
                 )
             except Exception as e:
-                _log.error(f'[{self.__class__.__name__} 定时消息发送失败: {e}]')
+                _log.warning(f'[{self.__class__.__name__}] 定时消息发送失败: {e}')
             finally:
                 _log.info(f'[{self.__class__.__name__}] 定时消息推送结束，离下一次推送还有: {interval}秒')
 
