@@ -40,13 +40,20 @@ def message_switch(msg = 'BOT不知道喔。。。'):
             with open('help.txt', 'r', encoding='UTF-8') as f:
                 content = f.read()
         case msg if msg.startswith('/list'):
-            server1 = query.query_online_players(config.get('server', 'server1'))
-            server2 = query.query_online_players(config.get('server', 'server2'))
-            server3 = query.query_online_players(config.get('server', 'server3'))
-            server4 = query.query_online_players(config.get('server', 'server4'))
-            server5 = query.query_online_players(config.get('server', 'server5'))
-
-            content = f'在线情况：\n1服：{server1}\n2服：{server2}\n3服：{server3}\n4服：{server4}\n5服：{server5}'
+            # Check serverlist
+            serverlist = []
+            for server_number in range(5):
+                server_number_str = str(server_number+1)
+                if config.get('server', f'server{server_number_str}_enable') == "True":
+                    serverlist.append(server_number_str)
+            content = ""
+            if len(serverlist) == 0:
+                content = "没有开启任何服务器，请关注群内通知"
+            elif len(serverlist) > 0:
+                content = "在线情况：\n"
+                for i in serverlist:
+                    target_server = f"server{i}"
+                    content += f"{i}服: {query.query_online_players(config.get('server',target_server))}\n"
 
         case msg if msg.startswith('/1服'):
             content += '1服情况：'
@@ -213,13 +220,24 @@ class MyClient(botpy.Client):
             _log.info(f'[{self.__class__.__name__}] 正在刷新session')
             await self.http.check_session()
 
-            content = (f"当前服务器信息 {datetime.now()}\n"
-                       f"\n"
-                       f"1服: {query.query_online_players(config.get('server','server1'))}\n"
-                       f"2服: {query.query_online_players(config.get('server','server2'))}\n"
-                       f"3服: {query.query_online_players(config.get('server','server3'))}\n"
-                       f"4服: {query.query_online_players(config.get('server','server4'))}\n"
-                       f"5服: {query.query_online_players(config.get('server','server5'))}\n")
+            # Check serverlist
+            serverlist = []
+            for server_number in range(5):
+                server_number_str = str(server_number+1)
+                if config.get('server', f'server{server_number_str}_enable') == "True":
+                    serverlist.append(server_number_str)
+
+            content = ""
+            if len(serverlist) == 0:
+                content = (f"当前服务器信息 {datetime.now()}\n"
+                           f"\n"
+                           f"没有开启任何服务器，请关注群内通知"
+                           )
+            elif len(serverlist) > 0:
+                content = f"当前服务器信息 {datetime.now()}\n\n"
+                for i in serverlist:
+                    target_server = f"server{i}"
+                    content += f"{i}服: {query.query_online_players(config.get('server',target_server))}\n"
 
             try:
                 repsonse = await self.api.post_message(
