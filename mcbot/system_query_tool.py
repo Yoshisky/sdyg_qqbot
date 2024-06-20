@@ -1,3 +1,4 @@
+import configparser
 import psutil
 from botpy import logging
 
@@ -9,10 +10,17 @@ from botpy import logging
 
 
 _log = logging.get_logger()
+config = configparser.ConfigParser()
+try:
+    config.read('config.cfg','UTF-8')
+except Exception as e:
+    _log.error(f"[init] {e}")
 
 
 class SystemStat:
-    def query_system_stats_aio(self, interval=1, path='~'):
+    home_dir = config.get("server","home_path")
+
+    def query_system_stats_aio(self, interval=1, path=home_dir):
         try:
             cpu_percent = psutil.cpu_percent(interval=interval)+'%'
             mem_percent = psutil.virtual_memory().percent+'%'
