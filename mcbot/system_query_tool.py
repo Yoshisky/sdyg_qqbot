@@ -22,10 +22,10 @@ class SystemStat:
 
     def query_system_stats_aio(self, interval=1, path=home_dir):
         try:
-            cpu_percent = psutil.cpu_percent(interval=interval)+'%'
-            mem_percent = psutil.virtual_memory().percent+'%'
-            swp_percent = psutil.swap_memory().percent+'%'
-            dsk_percent = psutil.disk_usage(path=path).percent+'%'
+            cpu_percent = str(psutil.cpu_percent(interval=interval))+'%'
+            mem_percent = str(psutil.virtual_memory().percent)+'%'
+            swp_percent = str(psutil.swap_memory().percent)+'%'
+            dsk_percent = str(psutil.disk_usage(path=path).percent)+'%'
 
             msg = f"\nCPU占用：{cpu_percent}\n内存占用：{mem_percent} （swap占用：{swp_percent}）\n硬盘占用：{dsk_percent}\n"
 
