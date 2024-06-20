@@ -13,6 +13,7 @@ from datetime import datetime
 from botpy.errors import ServerError
 
 from server_query_tool import Mcstatus
+from system_query_tool import SystemStat
 
 
 _log = logging.get_logger()
@@ -238,6 +239,10 @@ class MyClient(botpy.Client):
                 for i in serverlist:
                     target_server = f"server{i}"
                     content += f"{i}服: {query.query_online_players(config.get('server',target_server))}\n"
+
+            # Query System info
+            systeminfo = SystemStat()
+            content += systeminfo.query_system_stats_aio()
 
             try:
                 repsonse = await self.api.post_message(
